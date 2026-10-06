@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fieldkey Privacy Policy</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#1d1d1f;--mut:#6e6e73;--line:#d2d2d7;--acc:#0a63d6}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#f2f2f4;--mut:#a0a0a8;--line:#333;--acc:#5aa2ff}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:46rem;margin:0 auto;padding:2.5rem 1rem 4rem}
+h1{font-size:2rem;margin:0 0 .25rem}h2{font-size:1.2rem;margin:2rem 0 .5rem}
+.upd{color:var(--mut);margin:0 0 1.5rem}a{color:var(--acc)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:.5rem .6rem;text-align:left;vertical-align:top}
+</style></head><body><main>
+<h1>Fieldkey Privacy Policy</h1>
+<p class="upd">Last updated: October 5, 2026</p>
+<p>Fieldkey ("the app," "we," "our") is built around a simple principle: <strong>your data is yours, and we never see it.</strong> This policy explains exactly what the app stores, where it goes, and who can access it.</p>
+<h2>The short version</h2>
+<ul><li>Fieldkey has no servers, no user accounts, and no company backend. There is nothing for us to collect, because nothing is sent to us.</li><li>Everything you enter — client records, asset records, credentials, notes — is stored on your device and, if you enable sync, in <strong>your own personal iCloud account</strong> via Apple's CloudKit. We cannot see, access, or retrieve it. Neither can anyone else, including Apple, in the case of your encrypted credential data (see below).</li><li>We do not use analytics, advertising, or tracking of any kind. There is nothing in this app that is used to track you across other companies' apps or websites.</li></ul>
+<h2>What the app stores</h2>
+<div class='tw'><table><thead><tr><th>Data</th><th>Where it's stored</th><th>Who can access it</th></tr></thead><tbody>
+<tr><td>Client names, contacts, addresses, free-form notes</td><td>On-device, synced via your private iCloud account (unless you turn sync off)</td><td>Only you, signed into your own Apple ID</td></tr>
+<tr><td>Asset records (device details, serial numbers, warranty dates, photos)</td><td>Same as above</td><td>Only you</td></tr>
+<tr><td>Credential labels, usernames, associated URLs</td><td>Same as above</td><td>Only you</td></tr>
+<tr><td>Credential secrets (passwords/passphrases you save)</td><td>Encrypted on your device <em>before</em> being stored or synced. The key that unlocks them syncs only through iCloud Keychain, which is end-to-end encrypted, so Apple can't read it and neither can we. If you never turn sync on, the key never leaves this device</td><td>Only you — the key is never sent to us, and iCloud Keychain's end-to-end encryption means an encrypted secret is unreadable to anyone without access to your own iCloud Keychain</td></tr>
+</tbody></table></div>
+<p>We do not collect, receive, or have the technical ability to view any of the above. There is no Fieldkey server. Your data goes from your device to Apple's iCloud (if sync is on) and nowhere else.</p>
+<h2>Syncing and iCloud</h2>
+<p>If you leave sync on (the default), your data is stored in your personal iCloud account's private CloudKit database — the same kind of storage Apple uses for apps like Notes and Reminders. It is scoped entirely to your own Apple ID and is never shared, pooled, or made accessible to other users or to Fieldkey's developer. Apple's standard iCloud security and encryption protections apply to this data in transit and at rest.</p>
+<p>If you turn sync off in Settings, the app stops syncing your data to iCloud and keeps it on your device. This is a one-way-effective toggle in v1: switching between local-only and synced storage does not automatically migrate existing data between the two.</p>
+<h2>What we don't do</h2>
+<ul><li>We don't run analytics or crash-reporting SDKs that transmit usage data.</li><li>We don't show ads or use advertising identifiers.</li><li>We don't sell, rent, or share any data with third parties, data brokers, or advertisers — there is nothing to share, since nothing is sent to us in the first place.</li><li>We don't require an account, email address, or sign-up of any kind to use the app.</li><li>We don't track you across other apps or websites.</li></ul>
+<h2>Children's privacy</h2>
+<p>Fieldkey is a professional tool for IT consultants managing client infrastructure and is not directed at children. We do not knowingly collect data from children, and given the app's design (no accounts, no data collection by us at all), there is no mechanism by which we could.</p>
+<h2>Your control over your data</h2>
+<p>Because all data lives on your device and in your own iCloud account, you control it directly: deleting the app removes local data; deleting records in the app removes them from your synced copy on your next sync; and managing or deleting your iCloud data more broadly is done through your Apple ID's iCloud settings, not through us, because we have no separate copy to delete.</p>
+<h2>Changes to this policy</h2>
+<p>If this policy changes — for example, if a future version adds an optional feature that changes what data leaves the device — this page will be updated and the "Last updated" date above will reflect it. Material changes affecting how credential data is handled will also be called out in the app's release notes.</p>
+<h2>Contact</h2>
+<p>Questions about this policy or how Fieldkey handles data can be raised at <a href="https://github.com/Kieserde/fieldkey-privacy/issues">the issue tracker for this page</a>.</p>
+</main></body></html>
