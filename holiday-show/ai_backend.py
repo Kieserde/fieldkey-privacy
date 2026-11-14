@@ -1,11 +1,11 @@
 """Swappable hear / think / speak / see backends + code-enforced safety filters.
 Nothing (frames, audio, transcripts) is written to disk."""
-import io, json, os, re, wave, base64, urllib.request
+import io, json, os, re, wave, base64, random, urllib.request
 import numpy as np
 
 PACK = os.environ.get("SHOW_PACK", "santa")
 _dir = os.path.dirname(os.path.abspath(__file__))
-PERSONA = json.load(open(os.path.join(_dir, "packs", PACK, "persona.json")))
+PERSONA = json.load(open(os.path.join(_dir, "packs", PACK, "characters.json")))
 OLLAMA = os.environ.get("OLLAMA_URL", "http://lmstudio:11434")
 MODEL = os.environ.get("OLLAMA_MODEL", "gemma4:12b-it-q8_0")
 WHISPER = os.environ.get("WHISPER_URL", "http://127.0.0.1:8080/inference")
@@ -43,17 +43,29 @@ def hear(wav_bytes):
     return json.loads(urllib.request.urlopen(req, timeout=15).read()).get("text", "").strip()
 
 
-def think(transcript, history=()):
-    msgs = [{"role": "system", "content": PERSONA["system"]}, *history,
+def system_prompt(character, mode=None, avoid=""):
+    c = PERSONA["characters"][character]
+    extra = f" Optional flavor for this visit: {mode}" if mode else ""
+    return f"{c['system']} You like {', '.join(c['likes'])}.{extra} {avoid}".strip()
+
+
+def think(transcript, history=(), character="santa", mode=None, avoid="", temperature=1.0):
+    msgs = [{"role": "system", "content": system_prompt(character, mode, avoid)}, *history,
             {"role": "user", "content": transcript}]
     try:
-        r = json.loads(_post(f"{OLLAMA}/api/chat", {"model": MODEL, "messages": msgs, "stream": False}))
-        return clean(r["message"]["content"]) or PERSONA["fallback"][0]
+        r = json.loads(_post(f"{OLLAMA}/api/chat", {"model": MODEL, "messages": msgs, "stream": False,
+                                                    "options": {"temperature": temperature}}))
+        return clean(r["message"]["content"]) or random.choice(PERSONA["fallback"])
     except Exception:
-        return PERSONA["fallback"][0]
+        return random.choice(PERSONA["fallback"])
 
 
-def see(jpeg_bytes):
+def opener(character, mode, avoid="", temperature=1.0):
+    """Fresh, spoken first line for this visit (differs every time)."""
+    return think("Say your first line to the child now.", (), character, mode, avoid, temperature)
+
+
+def see(jpeg_bytes, character="santa"):
     """Two-hop vision: neutral caption of clothing/objects/mood only, filtered; then voiced via think()."""
     try:
         r = json.loads(_post(f"{OLLAMA}/api/chat", {"model": MODEL, "stream": False, "messages": [{
@@ -62,7 +74,7 @@ def see(jpeg_bytes):
         cap = clean(r["message"]["content"])
         if not cap or VISION_BLOCK.search(cap):
             return None
-        line = think(f"Make one friendly remark about this scene: {cap}")
+        line = think(f"Make one friendly remark about this scene: {cap}", character=character)
         return None if VISION_BLOCK.search(line) else line
     except Exception:
         return None
@@ -91,15 +103,16 @@ def gemini_wav_to_22k(raw):
     return pcm_to_wav(np.round(out).astype(np.int16))
 
 
-def _speak_gemini(text):
+def _speak_gemini(text, character="santa"):
+    c = PERSONA["characters"][character]
     key = os.environ["GEMINI_API_KEY"]
     r = json.loads(_post(
         "https://generativelanguage.googleapis.com/v1beta/interactions",
         {"model": "gemini-3.8-flash-tts",
          "input": text,
-         "annotations": [{"type": "speech_metadata", "style": "Deep, booming, hearty, jolly Santa Claus laughing warmly like Father Christmas with a grandfatherly chuckle"}],
+         "annotations": [{"type": "speech_metadata", "style": c["style"]}],
          "response_format": {"type": "audio"},
-         "generation_config": {"speech_config": [{"voice": "Fenrir"}]}},
+         "generation_config": {"speech_config": [{"voice": c["voice"]}]}},
         {"x-goog-api-key": key}, timeout=20))
     # NOTE: response field path is unverified against the live API; adjust here if it differs.
     return gemini_wav_to_22k(base64.b64decode(r["audio"]["data"]))
@@ -112,10 +125,10 @@ def _speak_piper(text):
     return pcm_to_wav(np.frombuffer(p.stdout, dtype="<i2"))
 
 
-def speak(text):
+def speak(text, character="santa"):
     if os.environ.get("GEMINI_API_KEY"):
         try:
-            return _speak_gemini(text)
+            return _speak_gemini(text, character)
         except Exception:
             pass
     return _speak_piper(text)

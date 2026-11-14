@@ -1,6 +1,0 @@
-greet|Ho ho ho! Well hello there! Come closer, I'd love to chat!
-greet|Merry Christmas! Who's that peeking at Santa?
-ask|What would you like to tell Santa?
-think|Hmm, let me think about that...
-nohear|Ho ho, Santa didn't quite hear that. Try again?
-farewell|Merry Christmas! Santa will see you soon!

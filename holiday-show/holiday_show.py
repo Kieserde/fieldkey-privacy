@@ -3,6 +3,7 @@ import os, sys, time, threading, subprocess
 import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "packs", "santa"))
 import ai_backend
+from variety import Variety
 from sprite_player import SpritePlayer
 
 E = lambda k, d: type(d)(os.environ.get(k, d))
@@ -55,36 +56,48 @@ def listen():
     return ai_backend.pcm_to_wav(np.concatenate(buf).astype("<i2"), 16000) if buf else None
 
 
-def converse(player, det):
+def converse(player, det, var, char, mode):
     history = []; silent = 0
+    # fresh LLM-written opener, different every visit (canned 'nohear' if the LLM/TTS is slow)
+    box = {}
+    def first():
+        t = ai_backend.opener(char, mode, var.avoid_hint(), var.temperature())
+        if var.seen(t): t = ai_backend.opener(char, mode, var.avoid_hint(), 1.3)
+        box["t"] = t; box["wav"] = ai_backend.speak(t, char)
+    ft = threading.Thread(target=first, daemon=True); ft.start(); ft.join(REPLY_TO)
+    if box.get("wav"): var.remember(box["t"]); player.say(box["wav"])
     for _ in range(TURNS):
         if not det.present: break
         player.set_state("listening"); wav = listen(); player.set_state("idle")
         if wav is None:
-            silent += 1; player.say("nohear")
+            silent += 1; player.say("nohear", var)
             if silent >= 2: break
             continue
         silent = 0; out = {}
         def reply():
             text = ai_backend.hear(wav)
-            out["t"] = ai_backend.think(text, history[-6:]) if text else None
+            out["t"] = ai_backend.think(text, history[-6:], char, mode, var.avoid_hint(), var.temperature()) if text else None
+            if out["t"] and var.seen(out["t"]):
+                out["t"] = ai_backend.think(text, history[-6:], char, mode, var.avoid_hint(), 1.3)
             if out["t"]:
-                out["wav"] = ai_backend.speak(out["t"]); history.extend(
+                var.remember(out["t"]); out["wav"] = ai_backend.speak(out["t"], char); history.extend(
                     [{"role": "user", "content": text}, {"role": "assistant", "content": out["t"]}])
         th = threading.Thread(target=reply, daemon=True); th.start()
-        player.say("think")  # hides hear() latency
+        player.say("think", var)  # hides hear() latency
         if th.is_alive(): player.set_state("thinking")
         th.join(REPLY_TO); player.set_state("idle")
         if out.get("wav"): player.say(out["wav"])
-        else: player.say("nohear")
+        else: player.say("nohear", var)
 
 
 def main():
     player = SpritePlayer(os.path.join(os.path.dirname(os.path.abspath(__file__)), "packs", "santa"))
-    det = Detector(); det.start()
+    det = Detector(); det.start(); P = ai_backend.PERSONA
+    var = Variety(P["characters"].keys(), P["modes"])
     while True:
         if det.present:
-            player.say("greet"); converse(player, det); player.say("farewell"); time.sleep(COOLDOWN)
+            char, mode = var.pick_character(), var.pick_mode(); player.set_character(char)
+            player.say("greet", var); converse(player, det, var, char, mode); player.say("farewell", var); time.sleep(COOLDOWN)
         time.sleep(0.2)
 
 

@@ -1,0 +1,154 @@
+{
+ "characters": {
+  "santa": {
+   "canvas": 1024,
+   "face": [
+    512,
+    548
+   ],
+   "front": [
+    315,
+    35
+   ],
+   "eyes_xy": [
+    408,
+    378
+   ],
+   "mouth_xy": [
+    455,
+    509
+   ]
+  },
+  "mrs_claus": {
+   "canvas": 1024,
+   "face": [
+    512,
+    540
+   ],
+   "front": [
+    343,
+    157
+   ],
+   "eyes_xy": [
+    408,
+    380
+   ],
+   "mouth_xy": [
+    463,
+    507
+   ]
+  },
+  "elf_jingle": {
+   "canvas": 1024,
+   "face": [
+    512,
+    548
+   ],
+   "front": [
+    337,
+    53
+   ],
+   "eyes_xy": [
+    400,
+    405
+   ],
+   "mouth_xy": [
+    451,
+    507
+   ]
+  },
+  "elf_holly": {
+   "canvas": 1024,
+   "face": [
+    512,
+    548
+   ],
+   "front": [
+    337,
+    53
+   ],
+   "eyes_xy": [
+    400,
+    405
+   ],
+   "mouth_xy": [
+    451,
+    507
+   ]
+  },
+  "rudolph": {
+   "canvas": 1024,
+   "face": [
+    512,
+    600
+   ],
+   "front": [
+    420,
+    440
+   ],
+   "eyes_xy": [
+    390,
+    375
+   ],
+   "mouth_xy": [
+    459,
+    564
+   ]
+  },
+  "frosty": {
+   "canvas": 1024,
+   "face": [
+    512,
+    505
+   ],
+   "front": [
+    297,
+    117
+   ],
+   "eyes_xy": [
+    418,
+    359
+   ],
+   "mouth_xy": [
+    459,
+    469
+   ]
+  },
+  "gingerbread": {
+   "canvas": 1024,
+   "face": [
+    512,
+    480
+   ],
+   "front": [
+    375,
+    463
+   ],
+   "eyes_xy": [
+    404,
+    340
+   ],
+   "mouth_xy": [
+    455,
+    441
+   ]
+  }
+ },
+ "mouths": [
+  "rest",
+  "oh",
+  "ah",
+  "eh",
+  "ee",
+  "fv",
+  "l_th"
+ ],
+ "eyes": [
+  "open",
+  "blink_1",
+  "blink_2",
+  "blink_closed",
+  "thinking",
+  "squint"
+ ]
+}

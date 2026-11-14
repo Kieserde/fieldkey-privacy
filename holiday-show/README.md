@@ -1,8 +1,18 @@
-# Holiday Santa (Raspberry Pi 5)
-Voice-interactive, lip-synced AI Santa. See the blueprint for the full spec.
-- `viseme_aligner.py`, `ai_backend.py` are pure Python and tested: `python -m pytest tests`
-- `sprite_player.py`, `holiday_show.py` need the Pi (KMSDRM, ALSA, /dev/video0).
-- Art assets (`packs/santa/sprites/`) are not generated yet; the renderer skips missing PNGs.
-- Run `packs/santa/make_lines.py` on the Pi to pre-render canned lines.
-- Deploy files in `deploy/` (systemd units, `/etc/default/holiday-show`).
-- Unverified: Gemini TTS response field path in `_speak_gemini`.
+# Holiday Show (Raspberry Pi 5)
+Voice-interactive, lip-synced Christmas characters: Santa, Mrs. Claus, Jingle and Holly the elves, Rudolph, Frosty, Ginger the gingerbread cookie.
+
+## Every visit is different
+`variety.py` rotates the character (no repeat within 3 visits) and a conversation "mode" (joke, fact, riddle, game...), randomizes
+LLM temperature, picks canned lines without repeating the last one, and avoids paraphrasing the last 40 replies.
+Each visit opens with a fresh LLM-written line spoken in that character's own Gemini voice.
+
+## Art
+`python art.py` redraws all characters, eyes, 7 mouth shapes, and the workshop background in code (no image credits). `preview.png` is a contact sheet.
+
+## Check it
+`python -m pytest tests` (needs `pytest pillow numpy`; `pygame` optional for the headless render test).
+
+## Still needs the real Pi
+Camera/mic capture, KMSDRM display, HDMI audio, whisper-server, and the Gemini TTS response shape
+(`_speak_gemini` field path is a guess). Run `packs/santa/make_lines.py` once to render canned lines for every character.
+Deploy files are in `deploy/`.
