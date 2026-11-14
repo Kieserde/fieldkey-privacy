@@ -1,0 +1,12 @@
+[Unit]
+Description=Holiday Santa display
+After=network-online.target holiday-whisper.service
+[Service]
+User=luis
+SupplementaryGroups=video audio render input adm
+EnvironmentFile=-/etc/default/holiday-show
+EnvironmentFile=-/opt/holiday-show/gemini.env
+ExecStart=/usr/bin/python3 /opt/holiday-show/holiday_show.py
+Restart=always
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=whisper.cpp server
+[Service]
+User=luis
+ExecStart=/opt/holiday-show/whisper/whisper-server -m /opt/holiday-show/models/whisper-base.en.bin --host 127.0.0.1 --port 8080 -t 4
+Restart=always
+[Install]
+WantedBy=multi-user.target
