@@ -122,3 +122,4 @@ def test_player_renders_headless():
     for c in CH:
         p.set_character(c); p.set_state("thinking"); __import__("time").sleep(0.15)
     p._visemes = ["ah", "oh"]; p.is_playing = True; __import__("time").sleep(0.1); p.is_playing = False
+    p.close(); assert p._done.is_set()

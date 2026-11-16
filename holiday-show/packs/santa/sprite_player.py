@@ -13,7 +13,7 @@ class SpritePlayer:
         self._ready = threading.Event(); self._visemes = []; self._t0 = 0.0
         self.meta = json.load(open(os.path.join(pack_dir, "sprites", "sprites.json")))
         self.lines = {}  # (char, cat) -> sorted file list
-        self._lock = threading.Lock()
+        self._stop = threading.Event(); self._done = threading.Event()
         threading.Thread(target=self._run, daemon=True).start()
         if not self._ready.wait(15): raise RuntimeError("display failed to start")
 
@@ -42,9 +42,16 @@ class SpritePlayer:
     def _run(self):
         try:
             self._render_loop()
-        except Exception as e:  # e.g. SDL torn down at interpreter exit; log, don't spam a traceback
-            import sys; print(f"[sprite_player] render loop stopped: {e!r}", file=sys.stderr)
+        except Exception as e:
+            if not self._stop.is_set():  # a real failure, not a requested shutdown
+                import sys; print(f"[sprite_player] render loop crashed: {e!r}", file=sys.stderr)
             self._ready.set()
+        finally:
+            self._done.set()
+
+    def close(self):
+        """Stop the render thread and tear SDL down on that same thread."""
+        self._stop.set(); self._done.wait(5)
 
     def _render_loop(self):
         if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
@@ -68,7 +75,7 @@ class SpritePlayer:
             return cache[c]
         font = pygame.font.Font(None, 44); next_blink = time.time() + 3; blink_i = None; blink_t = 0
         self._ready.set()
-        while True:
+        while not self._stop.is_set():
             pygame.event.pump(); t = time.time(); screen.blit(bg, (0, 0))
             c = self.character
             if c:
@@ -93,3 +100,4 @@ class SpritePlayer:
                 pygame.draw.rect(screen, (0, 0, 0), (w // 2 - pw // 2, h - 96, pw, 60), border_radius=30)
                 pygame.draw.circle(screen, col, (w // 2 - pw // 2 + 36, h - 66), pulse); screen.blit(txt, (w // 2 - pw // 2 + 62, h - 80))
             pygame.display.flip(); clock.tick(60)
+        pygame.quit()
